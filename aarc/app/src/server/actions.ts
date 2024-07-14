@@ -1,10 +1,11 @@
-import { type User, type Task, type File } from 'wasp/entities';
+import { type User, type Task, type File, type Broker } from 'wasp/entities';
 import { HttpError } from 'wasp/server';
 import {
   type GenerateGptResponse,
   type StripePayment,
   type UpdateCurrentUser,
   type UpdateUserById,
+  type UpdateBrokerById,
   type CreateTask,
   type DeleteTask,
   type UpdateTask,
@@ -286,6 +287,28 @@ export const updateUserById: UpdateUserById<{ id: number; data: Partial<User> },
   });
 
   return updatedUser;
+};
+
+export const updateBrokerById: UpdateBrokerById<{ id: string; data: Partial<Broker> }, Broker> = async (
+  { id, data },
+  context
+) => {
+  if (!context.user) {
+    throw new HttpError(401);
+  }
+
+  if (!context.user.isAdmin) {
+    throw new HttpError(403);
+  }
+
+  const updatedBroker = await context.entities.Broker.update({
+    where: {
+      id,
+    },
+    data,
+  });
+
+  return updatedBroker;
 };
 
 type fileArgs = {

@@ -140,6 +140,7 @@ entity Broker {=psl
   id                        String          @id @default(uuid())
   createdAt                 DateTime        @default(now())
   name                      String
+  code                      String
   description               String
 psl=}
 
@@ -162,7 +163,7 @@ entity Log {=psl
   createdAt                 DateTime        @default(now())
   webhook                   Webhook         @relation(fields: [webhookId], references: [id])
   webhookId                 String
-  
+
   description               String
 psl=}
 
@@ -204,8 +205,8 @@ entity DailyStats {=psl
   paidUserCount                    Int             @default(0)
   userDelta                        Int             @default(0)
   paidUserDelta                    Int             @default(0)
-  totalRevenue                     Float             @default(0)
-  totalProfit                      Float             @default(0)
+  totalRevenue                     Float           @default(0)
+  totalProfit                      Float           @default(0)
 
   sources                          PageViewSource[]
 psl=}
@@ -314,6 +315,12 @@ page AdminUsersPage {
   component: import AdminUsers from "@src/client/admin/pages/Users"
 }
 
+route AdminBrokersRoute { path: "/admin/brokers", to: AdminBrokersPage }
+page AdminBrokersPage {
+  authRequired: true,
+  component: import AdminBrokers from "@src/client/admin/pages/Brokers"
+}
+
 route AdminSettingsRoute { path: "/admin/settings", to: AdminSettingsPage }
 page AdminSettingsPage {
   authRequired: true,
@@ -405,6 +412,11 @@ action updateUserById {
   entities: [User]
 }
 
+action updateBrokerById {
+  fn: import { updateBrokerById } from "@src/server/actions.js",
+  entities: [Broker]
+}
+
 action createFile {
   fn: import { createFile } from "@src/server/actions.js",
   entities: [User, File]
@@ -441,6 +453,11 @@ query getDailyStats {
 query getPaginatedUsers {
   fn: import { getPaginatedUsers } from "@src/server/queries.js",
   entities: [User]
+}
+
+query getPaginatedBrokers {
+  fn: import { getPaginatedBrokers } from "@src/server/queries.js",
+  entities: [Broker]
 }
 
 /*

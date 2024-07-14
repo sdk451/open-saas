@@ -1,9 +1,10 @@
-import { type DailyStats, type GptResponse, type User, type PageViewSource, type Task, type File } from 'wasp/entities';
+import { type DailyStats, type GptResponse, type User, type Broker, type PageViewSource, type Task, type File } from 'wasp/entities';
 import { HttpError } from 'wasp/server';
 import {
   type GetGptResponses,
   type GetDailyStats,
   type GetPaginatedUsers,
+  type GetPaginatedBrokers,
   type GetAllTasksByUser,
   type GetAllFilesByUser,
   type GetDownloadFileSignedURL,
@@ -19,6 +20,9 @@ type DailyStatsValues = {
   dailyStats: DailyStatsWithSources;
   weeklyStats: DailyStatsWithSources[];
 };
+
+
+
 
 export const getGptResponses: GetGptResponses<void, GptResponse[]> = async (args, context) => {
   if (!context.user) {
@@ -201,3 +205,72 @@ export const getPaginatedUsers: GetPaginatedUsers<GetPaginatedUsersInput, GetPag
     totalPages,
   };
 };
+
+
+type GetPaginatedBrokersInput = {
+  skip: number;
+  cursor?: number | undefined;
+  nameContains?: string;
+};
+type GetPaginatedBrokersOutput = {
+  brokers: Pick<
+    Broker,
+    'id' | 'createdAt' | 'name' | 'code' | 'description'
+  >[];
+  totalPages: number;
+};
+
+
+export const getPaginatedBrokers: GetPaginatedBrokers<GetPaginatedBrokersInput, GetPaginatedBrokersOutput> = async (
+  args,
+  context
+) => {
+  if (!context.user?.isAdmin) {
+    throw new HttpError(401);
+  }
+
+  const queryResults = await context.entities.Broker.findMany({
+    skip: args.skip,
+    take: 10,
+    where: {
+      AND: [
+        {
+          name: {
+            contains: args.nameContains || undefined,
+            mode: 'insensitive',
+          },
+        },
+      ],
+    },
+    select: {
+      id: true,
+      createdAt: true,
+      name: true,
+      code: true,
+      description: true,
+    },
+    orderBy: {
+      name: 'desc',
+    },
+  });
+
+  const totalBrokerCount = await context.entities.Broker.count({
+    where: {
+      AND: [
+        {
+          name: {
+            contains: args.nameContains || undefined,
+            mode: 'insensitive',
+          },
+        },
+      ],
+    },
+  });
+  const totalPages = Math.ceil(totalBrokerCount / 10);
+
+  return {
+    brokers: queryResults,
+    totalPages,
+  };
+};
+
