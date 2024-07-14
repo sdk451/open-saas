@@ -12,8 +12,9 @@ import DarkModeSwitcher from '../admin/components/DarkModeSwitcher';
 import { UserMenuItems } from '../components/UserMenuItems';
 
 const navigation = [
+  { name: 'Tools (Dashboard)', href: routes.AppRoute.build() },
   { name: 'AI Scheduler (Demo App)', href: routes.DemoAppRoute.build() },
-  { name: 'File Upload (AWS S3)', href: routes.FileUploadRoute.build() },
+//  { name: 'File Upload (AWS S3)', href: routes.FileUploadRoute.build() },
   { name: 'Pricing', href: routes.PricingPageRoute.build() },
   { name: 'Documentation', href: DOCS_URL },
   { name: 'Blog', href: BLOG_URL },
@@ -30,7 +31,7 @@ export default function AppNavBar() {
       <nav className='flex items-center justify-between p-6 lg:px-8' aria-label='Global'>
         <div className='flex lg:flex-1'>
           <a href='/' className='-m-1.5 p-1.5'>
-            <img className='h-8 w-8' src={logo} alt='My SaaS App' />
+            <img className='h-8 w-8' src={logo} alt='Aarc Investment Tools' />
           </a>
         </div>
         <div className='flex lg:hidden'>

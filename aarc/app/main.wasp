@@ -234,6 +234,12 @@ page EmailVerificationPage {
 }
 //#endregion
 
+route AppRoute { path: "/app", to: AppPage }
+page AppPage {
+  authRequired: true,
+  component: import AppPage from "@src/client/app/AppPage"
+}
+
 route DemoAppRoute { path: "/demo-app", to: DemoAppPage }
 page DemoAppPage {
   authRequired: true,
