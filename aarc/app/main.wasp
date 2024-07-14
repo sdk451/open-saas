@@ -104,12 +104,13 @@ entity User {=psl
   subscriptionStatus        String?
   sendEmail                 Boolean         @default(false)
   datePaid                  DateTime?
-  credits                   Int             @default(3)
 
+  webhooks                  Webhook[]
   gptResponses              GptResponse[]
   contactFormMessages       ContactFormMessage[]
   tasks                     Task[]
   files                     File[]
+
 psl=}
 
 entity GptResponse {=psl
@@ -134,6 +135,37 @@ entity Task {=psl
   time                      String          @default("1")
   isDone                    Boolean         @default(false)
 psl=}
+
+entity Broker {=psl
+  id                        String          @id @default(uuid())
+  createdAt                 DateTime        @default(now())
+  name                      String
+  description               String
+psl=}
+
+entity Webhook {=psl
+  id                        String          @id @default(uuid())
+  createdAt                 DateTime        @default(now())
+
+  user                      User            @relation(fields: [userId], references: [id])
+  userId                    Int
+
+  broker                    String          
+  brokerApiUrl              String
+  brokerSecretKey           String
+  logs                      Log[]        
+  description               String
+psl=}
+
+entity Log {=psl
+  id                        String          @id @default(uuid())
+  createdAt                 DateTime        @default(now())
+  webhook                   Webhook         @relation(fields: [webhookId], references: [id])
+  webhookId                 String
+  
+  description               String
+psl=}
+
 
 entity File {=psl
   id                        String          @id @default(uuid())

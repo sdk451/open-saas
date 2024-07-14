@@ -31,6 +31,17 @@ export const UserMenuItems = ({ user, setMobileMenuOpen }: { user?: Partial<User
             </Link>
           </li>
         ) : null}
+        {path === '/' || path === '/admin' ? (
+          <li>
+            <Link
+              to='/app'
+              className='flex items-center gap-3.5 text-sm font-medium duration-300 ease-in-out hover:text-yellow-500'
+            >
+              <MdOutlineSpaceDashboard size='1.1rem' />
+              Tools Dashboard (App)
+            </Link>
+          </li>
+        ) : null}
         <li>
           <Link
             to='/account'

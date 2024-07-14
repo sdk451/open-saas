@@ -42,8 +42,8 @@ export const stripePayment: StripePayment<string, StripePaymentResult> = async (
     priceId = process.env.HOBBY_SUBSCRIPTION_PRICE_ID!;
   } else if (tier === TierIds.PRO) {
     priceId = process.env.PRO_SUBSCRIPTION_PRICE_ID!;
-  } else if (tier === TierIds.CREDITS) {
-    priceId = process.env.CREDITS_PRICE_ID!;
+  } else if (tier === TierIds.ULTIMATE) {
+    priceId = process.env.ULTIMATE_SUBSCRIPTION_PRICE_ID!;
   } else {
     throw new HttpError(404, 'Invalid tier');
   }
@@ -58,7 +58,7 @@ export const stripePayment: StripePayment<string, StripePaymentResult> = async (
     session = await createStripeCheckoutSession({
       priceId,
       customerId: customer.id,
-      mode: tier === TierIds.CREDITS ? 'payment' : 'subscription',
+      mode: 'subscription',
     });
     if (!session) {
       throw new HttpError(500, 'Error creating session');
@@ -113,18 +113,8 @@ export const generateGptResponse: GenerateGptResponse<GptPayload, GeneratedSched
       throw openai;
     }
 
-    if (!context.user.credits && (!context.user.subscriptionStatus || context.user.subscriptionStatus === 'deleted' || context.user.subscriptionStatus === 'past_due')) {
-      throw new HttpError(402, 'User has not paid or is out of credits');
-    } else if (context.user.credits && !context.user.subscriptionStatus) {
-      console.log('decrementing credits');
-      await context.entities.User.update({
-        where: { id: context.user.id },
-        data: {
-          credits: {
-            decrement: 1,
-          },
-        },
-      });
+    if ((!context.user.subscriptionStatus || context.user.subscriptionStatus === 'deleted' || context.user.subscriptionStatus === 'past_due')) {
+      throw new HttpError(402, 'User has not paid subscription');
     }
 
     const completion = await openai.chat.completions.create({
@@ -222,16 +212,6 @@ export const generateGptResponse: GenerateGptResponse<GptPayload, GeneratedSched
 
     return JSON.parse(gptArgs);
   } catch (error: any) {
-    if (!context.user.subscriptionStatus && error?.statusCode != 402) {
-      await context.entities.User.update({
-        where: { id: context.user.id },
-        data: {
-          credits: {
-            increment: 1,
-          },
-        },
-      });
-    }
     console.error(error);
     const statusCode = error.statusCode || 500;
     const errorMessage = error.message || 'Internal server error';

@@ -23,7 +23,6 @@ export function createRandomUser() {
     sendEmail: false,
     subscriptionStatus: faker.helpers.arrayElement(['active', 'canceled', 'past_due', 'deleted', null]),
     datePaid: faker.date.recent(),
-    credits: faker.number.int({ min: 0, max: 3 }),
     checkoutSessionId: null,
     subscriptionTier: faker.helpers.arrayElement([TierIds.HOBBY, TierIds.PRO]),
   };

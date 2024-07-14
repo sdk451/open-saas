@@ -64,17 +64,15 @@ export const stripeWebhook: StripeWebhook = async (request, response, context) =
             subscriptionTier: TierIds.PRO,
           },
         });
-      } else if (line_items?.data[0]?.price?.id === process.env.CREDITS_PRICE_ID) {
-        console.log('Credits purchased');
+      } else if (line_items?.data[0]?.price?.id === process.env.ULTIMATE_SUBSCRIPTION_PRICE_ID) {
+        console.log('Ulimate subscription purchased');
         await context.entities.User.updateMany({
           where: {
             stripeId: userStripeId,
           },
           data: {
-            credits: {
-              increment: 10,
-            },
             datePaid: new Date(),
+            subscriptionTier: TierIds.ULTIMATE,
           },
         });
       } else {

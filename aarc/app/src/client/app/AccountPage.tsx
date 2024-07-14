@@ -28,27 +28,18 @@ export default function AccountPage({ user }: { user: User }) {
             )}
             <div className='py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:py-5 sm:px-6'>
               <dt className='text-sm font-medium text-gray-500 dark:text-white'>Your Plan</dt>
-              {!!user.subscriptionStatus ? (
                 <>
                   {user.subscriptionStatus !== 'past_due' ? (
                     <dd className='mt-1 text-sm text-gray-900 dark:text-gray-400 sm:col-span-1 sm:mt-0'>
-                      {user.subscriptionTier === TierIds.HOBBY ? 'Hobby' : 'Pro'} Plan
+                      {user.subscriptionTier === TierIds.HOBBY ? 'Hobby' : user.subscriptionTier === TierIds.PRO ? 'Pro' : 'Ultimate'} Plan
                     </dd>
                   ) : (
                     <dd className='mt-1 text-sm text-gray-900 dark:text-gray-400 sm:col-span-1 sm:mt-0'>
-                      Your Account is Past Due! Please Update your Payment Information
+                      Your Subscription has Expired. Please Update your Payment Information
                     </dd>
                   )}
                   <CustomerPortalButton />
                 </>
-              ) : (
-                <>
-                  <dd className='mt-1 text-sm text-gray-900 dark:text-gray-400 sm:col-span-1 sm:mt-0'>
-                    Credits remaining: {user.credits}
-                  </dd>
-                  <BuyMoreButton />
-                </>
-              )}
             </div>
             <div className='py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:py-5 sm:px-6'>
               <dt className='text-sm font-medium text-gray-500 dark:text-white'>About</dt>
