@@ -1,8 +1,8 @@
 export enum TierIds {
   HOBBY = 'free-tier',
-  PRO = 'pro-plan',
-  ULTIMATE = 'ultimate-plan',
-  CREDITS = 'credits',
+  PRO = 'pro-tier',
+  ULTIMATE = 'ultimate-tier',
+  //CREDITS = 'credits',
 }
 
 export const DOCS_URL = 'https://docs.opensaas.sh';
