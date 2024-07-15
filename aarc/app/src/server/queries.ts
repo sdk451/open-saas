@@ -215,7 +215,7 @@ type GetPaginatedBrokersInput = {
 type GetPaginatedBrokersOutput = {
   brokers: Pick<
     Broker,
-    'id' | 'createdAt' | 'name' | 'code' | 'description'
+    'id' | 'createdAt' | 'name'  | 'code'  | 'description'
   >[];
   totalPages: number;
 };
@@ -250,7 +250,7 @@ export const getPaginatedBrokers: GetPaginatedBrokers<GetPaginatedBrokersInput, 
       description: true,
     },
     orderBy: {
-      name: 'desc',
+      name: 'asc',
     },
   });
 

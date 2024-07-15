@@ -70,8 +70,8 @@ const Settings = () => {
                           type="text"
                           name="fullName"
                           id="fullName"
-                          placeholder="Devid Jhon"
-                          defaultValue="Devid Jhon"
+                          placeholder="Your Name"
+                          defaultValue="Your Name"
                         />
                       </div>
                     </div>
@@ -132,8 +132,8 @@ const Settings = () => {
                         type="email"
                         name="emailAddress"
                         id="emailAddress"
-                        placeholder="devidjond45@gmail.com"
-                        defaultValue="devidjond45@gmail.com"
+                        placeholder="test123@gmail.com"
+                        defaultValue="test123@gmail.com"
                       />
                     </div>
                   </div>
@@ -150,8 +150,8 @@ const Settings = () => {
                       type="text"
                       name="Username"
                       id="Username"
-                      placeholder="devidjhon24"
-                      defaultValue="devidjhon24"
+                      placeholder="user224"
+                      defaultValue="duser224"
                     />
                   </div>
 

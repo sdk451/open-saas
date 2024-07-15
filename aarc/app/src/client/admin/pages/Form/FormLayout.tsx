@@ -70,9 +70,10 @@ const FormLayout = () => {
                   <div className="relative z-20 bg-transparent dark:bg-form-input">
                     <select className="relative z-20 w-full appearance-none rounded border border-stroke bg-transparent py-3 px-5 outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary">
                       <option value="">Type your subject</option>
+                      <option value="">Australia</option>
+                      <option value="">Canada</option>
                       <option value="">USA</option>
                       <option value="">UK</option>
-                      <option value="">Canada</option>
                     </select>
                     <span className="absolute top-1/2 right-4 z-30 -translate-y-1/2">
                       <svg

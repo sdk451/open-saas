@@ -139,6 +139,7 @@ psl=}
 entity Broker {=psl
   id                        String          @id @default(uuid())
   createdAt                 DateTime        @default(now())
+  
   name                      String
   code                      String
   description               String
@@ -321,6 +322,12 @@ page AdminBrokersPage {
   component: import AdminBrokers from "@src/client/admin/pages/Brokers"
 }
 
+route AdminCreateBrokerRoute { path: "/admin/broker/create", to: AdminCreateBrokerPage }
+page AdminCreateBrokerPage {
+  authRequired: true,
+  component: import AdminCreateBroker from "@src/client/admin/pages/CreateBrokerPage"
+}
+
 route AdminSettingsRoute { path: "/admin/settings", to: AdminSettingsPage }
 page AdminSettingsPage {
   authRequired: true,
@@ -374,6 +381,19 @@ page AdminUIButtonsPage {
  * from the client. Queries fetch stuff, Actions modify/do stuff.
  * https://wasp-lang.dev/docs/data-model/operations/overview
  */
+
+// CRUD 
+
+crud Brokers {
+  entity: Broker,
+  operations: {
+    getAll: {},
+    get: {},
+    create: {},
+    update: {},
+    delete: {},
+  },
+}
 
 // 📝 Actions
 

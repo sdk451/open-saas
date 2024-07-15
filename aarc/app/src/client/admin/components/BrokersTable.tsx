@@ -1,8 +1,9 @@
 import { updateBrokerById, useQuery, getPaginatedBrokers } from 'wasp/client/operations';
 import { useState, useEffect } from 'react';
-import SwitcherBroker from './SwitcherBroker';
 import Loader from '../common/Loader';
 import DropdownEditDelete from './DropdownEditDelete';
+import { CiCirclePlus } from "react-icons/ci";
+import { Link } from 'wasp/client/router';
 
 const BrokersTable = () => {
   const [skip, setskip] = useState(0);
@@ -10,6 +11,7 @@ const BrokersTable = () => {
   const [name, setName] = useState<string | undefined>(undefined);
   const { data, isLoading, error } = useQuery(getPaginatedBrokers, {
     skip,
+    nameContains: name,
   });
 
   useEffect(() => {
@@ -34,9 +36,7 @@ const BrokersTable = () => {
                 type='text'
                 id='name-filter'
                 placeholder='Binance'
-                onChange={(e) => {
-                  setName(e.currentTarget.value);
-                }}
+                onChange={(e) => {setName(e.currentTarget.value); }}
                 className='rounded border border-stroke py-2 px-5 bg-white outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary'
               />
             </div>
@@ -51,7 +51,7 @@ const BrokersTable = () => {
                   onChange={(e) => {
                     setPage(parseInt(e.currentTarget.value));
                   }}
-                  className='rounded-md border-1 border-stroke bg-transparent  px-4 font-medium outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary'
+                  className='rounded-md border-1 border-stroke bg-transparent  px-4 font-medium outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary max-w-30'
                 />
                 <span className='text-md text-black dark:text-white'> / {data?.totalPages} </span>
               </div>
@@ -59,15 +59,23 @@ const BrokersTable = () => {
           </div>
         </div>
 
-        <div className='grid grid-cols-12 border-t-4  border-stroke py-4.5 px-4 dark:border-strokedark md:px-6 '>
-          <div className='col-span-3 flex items-center'>
-            <p className='font-medium'>Broker Name</p>
+        <div className='grid grid-cols-9 border-t-4  border-stroke py-4 px-4 dark:border-strokedark md:px-6 '>
+          <div className='col-start-1 flex items-center'>
+            <p className='font-medium'>Code</p>
           </div>
-          <div className='col-span-2 flex items-center'>
-            <p className='font-medium'>Broker Code</p>
+          <div className='col-start-2 col-span-2 flex items-center'>
+            <p className='font-medium'>Name</p>
           </div>
-          <div className='col-span-1 flex items-center'>
-            <p className='font-medium'></p>
+          <div className='col-start-4 col-span-2 flex items-center'>
+            <p className='font-medium'>Description</p>
+          </div>
+          <div className='col-start-6 col-span-2 flex items-center'>
+            <p className='font-medium'>Created</p>
+          </div>
+          <div className='col-start-8 flex items-center'>
+            <Link to='/admin/broker/create'> 
+              <table><tr><td>Add Broker</td><td><td> </td><CiCirclePlus /></td></tr></table>
+            </Link>  
           </div>
         </div>
         {isLoading && (
@@ -80,21 +88,22 @@ const BrokersTable = () => {
           data.brokers.map((broker) => (
             <div
               key={broker.id}
-              className='grid grid-cols-12 gap-4 border-t border-stroke py-4.5 px-4 dark:border-strokedark  md:px-6 '
-            >
-              <div className='col-span-3 flex items-center'>
-                <div className='flex flex-col gap-1 '>
+              className='grid grid-cols-9 gap-4 border-t border-stroke py-4.5 px-4 dark:border-strokedark  md:px-6 '>
+                <div className='col-start-1 flex items-left'>
+                  <p className='text-sm text-black dark:text-white'>{broker.code}</p>
+                </div>
+                <div className='col-start-2 col-span-2 flex items-left'>
                   <p className='text-sm text-black dark:text-white'>{broker.name}</p>
                 </div>
-              </div>
-              <div className='col-span-1 flex items-center'>
-                <div className='text-sm text-black dark:text-white'>
-                  <SwitcherBroker broker={broker} updateBrokerById={updateBrokerById} />
+                <div className='col-start-4 col-span-2 flex items-left'>
+                  <p className='text-sm text-black dark:text-white'>{broker.description}</p>
                 </div>
-              </div>
-              <div className='col-span-1 flex items-center'>
-                <DropdownEditDelete />
-              </div>
+                <div className='col-start-6 col-span-2 flex items-left'>
+                  <p className='text-sm text-black dark:text-white'>{broker.createdAt.toLocaleString()}</p>
+                </div>
+                <div className='col-start-8 col-span-2 flex items-left'>
+                  <DropdownEditDelete />
+                </div>
             </div>
           ))}
       </div>

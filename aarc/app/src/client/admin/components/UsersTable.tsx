@@ -158,7 +158,7 @@ const UsersTable = () => {
                   onChange={(e) => {
                     setPage(parseInt(e.currentTarget.value));
                   }}
-                  className='rounded-md border-1 border-stroke bg-transparent  px-4 font-medium outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary'
+                  className='rounded-md border-1 border-stroke bg-transparent px-4 font-medium outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary max-w-30'
                 />
                 <span className='text-md text-black dark:text-white'> / {data?.totalPages} </span>
               </div>
