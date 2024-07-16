@@ -1,10 +1,11 @@
-import { type DailyStats, type GptResponse, type User, type Broker, type PageViewSource, type Task, type File } from 'wasp/entities';
+import { type DailyStats, type GptResponse, type User, type Broker, type Webhook, type PageViewSource, type Task, type File } from 'wasp/entities';
 import { HttpError } from 'wasp/server';
 import {
   type GetGptResponses,
   type GetDailyStats,
   type GetPaginatedUsers,
   type GetPaginatedBrokers,
+  type GetAllWebhooksByUser,
   type GetAllTasksByUser,
   type GetAllFilesByUser,
   type GetDownloadFileSignedURL,
@@ -21,7 +22,21 @@ type DailyStatsValues = {
   weeklyStats: DailyStatsWithSources[];
 };
 
-
+export const getAllWebhooksByUser: GetAllWebhooksByUser<void, Webhook[]> = async (args, context) => {
+  if (!context.user) {
+    throw new HttpError(401);
+  }
+  return context.entities.Webhook.findMany({
+    where: {
+      user: {
+        id: context.user.id,
+      },
+    },
+    orderBy: {
+      createdAt: 'desc',
+    },
+  });
+};
 
 
 export const getGptResponses: GetGptResponses<void, GptResponse[]> = async (args, context) => {

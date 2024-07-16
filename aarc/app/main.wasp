@@ -155,8 +155,8 @@ entity Webhook {=psl
   broker                    String          
   brokerApiUrl              String
   brokerSecretKey           String
-  logs                      Log[]        
   description               String
+  logs                      Log[] 
 psl=}
 
 entity Log {=psl
@@ -272,6 +272,12 @@ route AppRoute { path: "/app", to: AppPage }
 page AppPage {
   authRequired: true,
   component: import AppPage from "@src/client/app/AppPage"
+}
+
+route CreateWebhookRoute { path: "/app/webhook/create", to: CreateWebhookPage }
+page CreateWebhookPage {
+  authRequired: true,
+  component: import CreateWebhookPage from "@src/client/app/CreateWebhookPage"
 }
 
 route DemoAppRoute { path: "/demo-app", to: DemoAppPage }
@@ -417,6 +423,21 @@ action updateTask {
   entities: [Task]
 }
 
+action createWebhook {
+  fn: import { createWebhook } from "@src/server/actions.js",
+  entities: [Webhook]
+}
+
+action deleteWebhook {
+  fn: import { deleteWebhook } from "@src/server/actions.js",
+  entities: [Webhook]
+}
+
+action updateWebhook {
+  fn: import { updateWebhook } from "@src/server/actions.js",
+  entities: [Webhook]
+}
+
 action stripePayment {
   fn: import { stripePayment } from "@src/server/actions.js",
   entities: [User]
@@ -468,6 +489,11 @@ query getDownloadFileSignedURL {
 query getDailyStats {
   fn: import { getDailyStats } from "@src/server/queries.js",
   entities: [User, DailyStats]
+}
+
+query getAllWebhooksByUser {
+  fn: import { getAllWebhooksByUser } from "@src/server/queries.js",
+  entities: [User, Webhook]
 }
 
 query getPaginatedUsers {

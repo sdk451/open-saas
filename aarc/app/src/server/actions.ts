@@ -1,4 +1,4 @@
-import { type User, type Task, type File, type Broker } from 'wasp/entities';
+import { type User, type Task, type File, type Broker, type Webhook } from 'wasp/entities';
 import { HttpError } from 'wasp/server';
 import {
   type GenerateGptResponse,
@@ -10,6 +10,9 @@ import {
   type DeleteTask,
   type UpdateTask,
   type CreateFile,
+  type CreateWebhook,
+  type DeleteWebhook,
+  type UpdateWebhook,
 } from 'wasp/server/operations';
 import Stripe from 'stripe';
 import type { GeneratedSchedule, StripePaymentResult } from '../shared/types';
@@ -266,6 +269,61 @@ export const deleteTask: DeleteTask<Pick<Task, 'id'>, Task> = async ({ id }, con
 
   return task;
 };
+
+
+export const createWebhook: CreateWebhook<Pick<Webhook, 'broker' | 'brokerApiUrl' | 'brokerSecretKey' | 'description'>, Webhook> = async ({ broker, brokerApiUrl, brokerSecretKey, description }, context) => {
+  if (!context.user) {
+    throw new HttpError(401);
+  }
+
+  const webhook = await context.entities.Webhook.create({
+    data: {
+      broker,
+      brokerApiUrl,
+      brokerSecretKey,
+      description,
+      user: { connect: { id: context.user.id } },
+    },
+  });
+
+  return webhook;
+};
+
+
+export const updateWebhook: UpdateWebhook<Partial<Webhook>, Webhook> = async ({ id, broker, brokerApiUrl, brokerSecretKey, description }, context) => {
+  if (!context.user) {
+    throw new HttpError(401);
+  }
+
+  const webhook = await context.entities.Webhook.update({
+    where: {
+      id,
+    },
+    data: {
+      broker,
+      brokerApiUrl,
+      brokerSecretKey,
+      description
+    },
+  });
+
+  return webhook;
+};
+
+export const deleteWebhook: DeleteWebhook<Pick<Webhook, 'id'>, Webhook> = async ({ id }, context) => {
+  if (!context.user) {
+    throw new HttpError(401);
+  }
+
+  const webhook = await context.entities.Webhook.delete({
+    where: {
+      id,
+    },
+  });
+
+  return webhook;
+};
+
 
 export const updateUserById: UpdateUserById<{ id: number; data: Partial<User> }, User> = async (
   { id, data },
