@@ -7,13 +7,12 @@ import {
   getAllWebhooksByUser,
 } from 'wasp/client/operations';
 
-
+import { cn } from '../../shared/utils';
 import { useState, useMemo } from 'react';
 import { CgSpinner } from 'react-icons/cg';
-import { TiDelete } from 'react-icons/ti';
-import { cn } from '../../shared/utils';
-import { Link } from 'wasp/client/router'
 import { useAuth } from "wasp/client/auth";
+import { TiDelete } from 'react-icons/ti';
+import { Link } from 'wasp/client/router'
 
 
 export default function AppPage() {
@@ -48,23 +47,33 @@ export default function AppPage() {
 
 function WebhooksTable() {
 
-    const [broker, setBroker] = useState<string>('');
-    const [brokerApiUrl, setBrokerUrl] = useState<string>('');
-    const [brokerSecretKey, setBrokerKey] = useState<string>('');
-    const [description, setDescription] = useState<string>('');
-    
-    const { data: user } = useAuth();
+//    const [broker, setBroker] = useState<string>('');
+//    const [brokerApiUrl, setBrokerUrl] = useState<string>('');
+//    const [brokerSecretKey, setBrokerKey] = useState<string>('');
+//    const [description, setDescription] = useState<string>('');
+//    const { data: user } = useAuth();
     const { data: webhooks, isLoading: isWebhooksLoading } = useQuery(getAllWebhooksByUser);
   
   return (
-    <div className='space-y-10 col-span-full'>
+    <div className='border-t-4 border-stroke py-4 px-4 dark:border-strokedark md:px-6'>
       {isWebhooksLoading && <div>Loading...</div>}
       {webhooks!! && webhooks.length > 0 ? (
-        <div className='space-y-4'>
-          {webhooks.map((webhook: Webhook) => (
-            <Todo key={webhook.id} id={webhook.id} broker={webhook.broker} brokerApiUrl={webhook.brokerApiUrl} brokerSecretKey={webhook.brokerSecretKey} description={webhook.description} />
-          ))}
-        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Broker</th>
+              <th>Api Url</th>
+              <th>Api Secret</th>
+              <th>Description</th>
+              <th>Created</th>
+            </tr>
+          </thead>
+          <tbody>
+            {webhooks.map((webhook) => (
+              <TableRow key={webhook.id} id={webhook.id} createdAt={webhook.createdAt} broker={webhook.broker} brokerApiUrl={webhook.brokerApiUrl} brokerSecretKey={webhook.brokerSecretKey} description={webhook.description} />
+            ))}
+          </tbody>
+        </table>
       ) : (
         <div className='text-gray-600 text-center'>Add a webhook to begin</div>
       )}
@@ -72,9 +81,11 @@ function WebhooksTable() {
   )
 };
 
-type WebhookProps = Pick<Webhook, 'id' | 'broker' | 'brokerApiUrl' | 'brokerSecretKey' | 'description'>;
 
-function Todo({ id, broker, brokerApiUrl, brokerSecretKey, description }: WebhookProps) {
+
+type WebhookProps = Pick<Webhook, 'id' | 'createdAt' | 'broker' | 'brokerApiUrl' | 'brokerSecretKey' | 'description'>;
+
+function TableRow({ id, createdAt, broker, brokerApiUrl, brokerSecretKey, description }: WebhookProps) {
 
   const handleDescriptionChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     await updateWebhook({
@@ -109,24 +120,18 @@ function Todo({ id, broker, brokerApiUrl, brokerSecretKey, description }: Webhoo
   };
 
   return (
-    <div className='flex flex-col gap-3'>
-      <div className='flex items-center justify-between gap-3'>
-        <label htmlFor='broker' className='text-sm text-gray-600 dark:text-gray-300 text-nowrap font-semibold'>
-          broker
-        </label>
-        <input
-          type='string'
-          id='broker'
-          placeholder='Binance'
-          className='min-w-[7rem] text-gray-800/90 text-center font-medium rounded-md border border-gray-200 bg-yellow-50 hover:bg-yellow-100 shadow-md focus:outline-none focus:border-transparent focus:shadow-none duration-200 ease-in-out hover:shadow-none'
-          value={broker}
-          onChange={(e) => handleBrokerChange(e)}
-        />
-      </div>
-      <div className='flex items-center justify-between gap-3'>
-        <label htmlFor='APIURL' className='text-sm text-gray-600 dark:text-gray-300 text-nowrap font-semibold'>
-          API URL
-        </label>
+    <tr key={id} className='flex-row'>
+      <td key={broker} className='flex items-left'>
+      <input 
+        type='string'
+        id='broker'
+        placeholder='Binance'
+        className='min-w-[7rem] text-gray-800/90 text-center font-medium rounded-md border border-gray-200 bg-yellow-50 hover:bg-yellow-100 shadow-md focus:outline-none focus:border-transparent focus:shadow-none duration-200 ease-in-out hover:shadow-none'
+        value={broker}
+        onChange={(e) => handleBrokerChange(e)}
+      />
+      </td>
+      <td key={brokerApiUrl} className='flex items-left'>
         <input
           type='string'
           id='brokerApiUrl'
@@ -135,11 +140,8 @@ function Todo({ id, broker, brokerApiUrl, brokerSecretKey, description }: Webhoo
           value={brokerApiUrl}
           onChange={(e) => handleBrokerUrlChange(e)}
         />
-      </div>
-      <div className='flex items-center justify-between gap-3'>
-        <label htmlFor='APISecret' className='text-sm text-gray-600 dark:text-gray-300 text-nowrap font-semibold'>
-          API Secret
-        </label>
+      </td>
+      <td key={brokerSecretKey} className='flex items-left'>
         <input
           type='string'
           id='brokerSecretKey'
@@ -148,11 +150,8 @@ function Todo({ id, broker, brokerApiUrl, brokerSecretKey, description }: Webhoo
           value={brokerSecretKey}
           onChange={(e) => handleBrokerKeyChange(e)}
         />
-      </div>
-      <div className='flex items-center justify-between gap-3'>
-        <label htmlFor='description' className='text-sm text-gray-600 dark:text-gray-300 text-nowrap font-semibold'>
-          API Secret
-        </label>
+      </td>
+      <td key={description} className='flex items-left'>
         <input
           type='string'
           id='description'
@@ -161,12 +160,15 @@ function Todo({ id, broker, brokerApiUrl, brokerSecretKey, description }: Webhoo
           value={description}
           onChange={(e) => handleDescriptionChange(e)}
         />
-      </div>
-      <div className='flex items-center justify-end w-15'>
+      </td>
+      <td key={createdAt.toLocaleString()} className='flex items-left'>
+        <p className='text-sm text-black dark:text-white'>{createdAt.toLocaleString()}</p>
+      </td>
+      <td className='flex items-center justify-end w-15'>
         <button className='p-1' onClick={handleDeleteClick} title='Remove Webhook'>
           <TiDelete size='20' className='text-red-600 hover:text-red-700' />
         </button>
-      </div>
-    </div>
+    </td>
+  </tr>
   )
 };

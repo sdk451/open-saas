@@ -1,5 +1,5 @@
 import { FormEvent, useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import DefaultLayout from '../admin/layout/DefaultLayout';
 import Breadcrumb from '../admin/components/Breadcrumb';
 import { createWebhook } from 'wasp/client/operations';
@@ -9,29 +9,27 @@ import { useAuth } from "wasp/client/auth";
 import { type Webhook } from 'wasp/entities';
 
 
-// const handleCreateWebhook : typeof createWebhook<CreateWebhookPayload, Webhook> = async (
-//   args,
-//   context
-// ) => {
-//   if (!context.user) {
-//     throw new HttpError(401)
-//   }
-//   return context.entities.Webhook.create({
-//     data: {
-//       broker: args.broker,
-//       brokerApiUrl: args.brokerApiUrl, 
-//       brokerSecretKey: args.brokerSecretKey,
-//       description: args.description,
-//       user: { connect: { id: context.user.id } },
-//     },
-//   })
-// }
+// export const calculateDailyStats: DailyStatsJob<never, void> = async (_args, context) => {
+//   const nowUTC = new Date(Date.now());
+//   nowUTC.setUTCHours(0, 0, 0, 0);
 
+//   const yesterdayUTC = new Date(nowUTC);
+//   yesterdayUTC.setUTCDate(yesterdayUTC.getUTCDate() - 1);
 
+//   try {
+//     const yesterdaysStats = await context.entities.DailyStats.findFirst({
+//       where: {
+//         date: {
+//           equals: yesterdayUTC,
+//         },
+//       },
+//     });
+
+//     const userCount = await context.entities.User.count({});
 
 function NewWebhookForm({ handleCreateWebhook }: { handleCreateWebhook: typeof createWebhook }) {
 
-  type CreateWebhookPayload = Pick<Webhook, 'id' | 'userId' | 'broker' | 'brokerApiUrl' | 'brokerSecretKey' | 'description'>
+  type CreateWebhookPayload = Pick<Webhook, 'broker' | 'brokerApiUrl' | 'brokerSecretKey' | 'description'>
 
   const { data: user } = useAuth();
   const history = useHistory();
@@ -45,11 +43,12 @@ function NewWebhookForm({ handleCreateWebhook }: { handleCreateWebhook: typeof c
   
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     if (!user) {
-      throw new HttpError(401);
-    }
+      history.push('/login');
+      return;
+    } 
 
     const target = event.target as HTMLFormElement
-    payload = {id: '', userId: user.id, broker: broker, brokerApiUrl: brokerApiUrl, brokerSecretKey: brokerSecretKey, description: description}
+    payload = {broker: broker, brokerApiUrl: brokerApiUrl, brokerSecretKey: brokerSecretKey, description: description}
 
     try {
       await handleCreateWebhook(payload);
@@ -57,10 +56,15 @@ function NewWebhookForm({ handleCreateWebhook }: { handleCreateWebhook: typeof c
       setBrokerUrl('');
       setBrokerKey('');
       setDescription('');
-      // history.push('/app');
-    } catch (err: any) {
-        window.alert('Error: ' + (err.message || 'Something went wrong'));
-    }
+    } catch (error: any) {
+      console.error('Error creating webhook: ', error);
+      // await context.entities.Logs.create({
+      //   data: {
+      //     message: `Error creating webhook: ${error?.message}`,
+      //     level: 'orm-error',
+      //   });
+      }
+    history.push('/app');
   };
 
   return (
