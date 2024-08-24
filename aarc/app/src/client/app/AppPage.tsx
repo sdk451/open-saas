@@ -29,15 +29,17 @@ export default function AppPage() {
           List Current Webhooks in a table. If there aren't any, display add webhook link to add webhook form
         </p>
         <div className='my-8 border rounded-3xl border-gray-900/10 dark:border-gray-100/10'>
-          <div className='sm:w-[90%] md:w-[70%] lg:w-[50%] py-10 px-6 mx-auto my-8 space-y-10'>
+          <div className='mx-auto text-center py-4 px-6'>
             <WebhooksTable />
           </div>
         </div>
         <div className='my-8 border rounded-3xl border-gray-900/10 dark:border-gray-100/10'>
-          <div className='sm:w-[90%] md:w-[70%] lg:w-[50%] py-10 px-6 mx-auto my-8 space-y-10'>
-            <Link to='/app/webhook/create'> 
-              Create Webhook
-            </Link>  
+          <div className='py-4 px-6 mx-auto text-center'>
+            <button>
+              <Link to='/app/webhook/create'> 
+                Create Webhook
+              </Link>
+            </button>
           </div>
         </div>
       </div>
@@ -47,15 +49,11 @@ export default function AppPage() {
 
 function WebhooksTable() {
 
-//    const [broker, setBroker] = useState<string>('');
-//    const [brokerApiUrl, setBrokerUrl] = useState<string>('');
-//    const [brokerSecretKey, setBrokerKey] = useState<string>('');
-//    const [description, setDescription] = useState<string>('');
-//    const { data: user } = useAuth();
+    const { data: user } = useAuth();
     const { data: webhooks, isLoading: isWebhooksLoading } = useQuery(getAllWebhooksByUser);
   
   return (
-    <div className='border-t-4 border-stroke py-4 px-4 dark:border-strokedark md:px-6'>
+    <div>
       {isWebhooksLoading && <div>Loading...</div>}
       {webhooks!! && webhooks.length > 0 ? (
         <table>
@@ -67,10 +65,20 @@ function WebhooksTable() {
               <th>Description</th>
               <th>Created</th>
             </tr>
+            <tr>
+              <div className='border-t-2 border-stroke py-2 px-2 dark:border-strokedark md:px-6'></div>
+            </tr>
           </thead>
           <tbody>
             {webhooks.map((webhook) => (
-              <TableRow key={webhook.id} id={webhook.id} createdAt={webhook.createdAt} broker={webhook.broker} brokerApiUrl={webhook.brokerApiUrl} brokerSecretKey={webhook.brokerSecretKey} description={webhook.description} />
+              <TableRow key={webhook.id} 
+                        id={webhook.id} 
+                        createdAt={webhook.createdAt} 
+                        userId={webhook.userId}
+                        broker={webhook.broker} 
+                        brokerApiUrl={webhook.brokerApiUrl} 
+                        brokerSecretKey={webhook.brokerSecretKey} 
+                        description={webhook.description}  />
             ))}
           </tbody>
         </table>
@@ -81,90 +89,114 @@ function WebhooksTable() {
   )
 };
 
+// type WebhookProps = Pick<Webhook, 'id' | 'createdAt' | 'broker' | 'brokerApiUrl' | 'brokerSecretKey' | 'description'>;
 
+function TableRow(webhook : Webhook) {
 
-type WebhookProps = Pick<Webhook, 'id' | 'createdAt' | 'broker' | 'brokerApiUrl' | 'brokerSecretKey' | 'description'>;
+  const [broker, setBroker] = useState<string>('');
+  const [brokerApiUrl, setBrokerUrl] = useState<string>('');
+  const [brokerSecretKey, setBrokerKey] = useState<string>('');
+  const [description, setDescription] = useState<string>('');
 
-function TableRow({ id, createdAt, broker, brokerApiUrl, brokerSecretKey, description }: WebhookProps) {
-
-  const handleDescriptionChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleDescriptionChange = async (id: string) => {
     await updateWebhook({
       id,
-      description: e.currentTarget.value,
+      description: description,
     });
   };
 
-  const handleBrokerChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleBrokerChange = async (id: string) => {
     await updateWebhook({
       id,
-      broker: e.currentTarget.value,
+      broker: broker,
     });
   };
 
-  const handleBrokerUrlChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleBrokerUrlChange = async (id: string) => {
     await updateWebhook({
       id,
-      brokerApiUrl: e.currentTarget.value,
+      brokerApiUrl: brokerApiUrl,
     });
   };
 
-  const handleBrokerKeyChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleBrokerKeyChange = async (id: string) => {
     await updateWebhook({
       id,
-      brokerSecretKey: e.currentTarget.value,
+      brokerSecretKey: brokerSecretKey,
     });
   };
 
   const handleDeleteClick = async () => {
-    await deleteWebhook({ id });
+    await deleteWebhook({ 'id':webhook.id });
   };
 
   return (
-    <tr key={id} className='flex-row'>
-      <td key={broker} className='flex items-left'>
+    <tr key={webhook.id}>
+      <td key={broker}>
       <input 
         type='string'
         id='broker'
         placeholder='Binance'
         className='min-w-[7rem] text-gray-800/90 text-center font-medium rounded-md border border-gray-200 bg-yellow-50 hover:bg-yellow-100 shadow-md focus:outline-none focus:border-transparent focus:shadow-none duration-200 ease-in-out hover:shadow-none'
         value={broker}
-        onChange={(e) => handleBrokerChange(e)}
+        onChange={(e) => setBroker(e.currentTarget.value)}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter') {
+            handleBrokerChange(webhook.id);
+          }
+        }}
       />
       </td>
-      <td key={brokerApiUrl} className='flex items-left'>
+      <td key={brokerApiUrl}>
         <input
           type='string'
           id='brokerApiUrl'
           placeholder='http://test.url/someapi'
           className='min-w-[7rem] text-gray-800/90 text-center font-medium rounded-md border border-gray-200 bg-yellow-50 hover:bg-yellow-100 shadow-md focus:outline-none focus:border-transparent focus:shadow-none duration-200 ease-in-out hover:shadow-none'
           value={brokerApiUrl}
-          onChange={(e) => handleBrokerUrlChange(e)}
+          onChange={(e) => setBrokerUrl(e.currentTarget.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              handleBrokerUrlChange(webhook.id);
+            }
+          }}
         />
       </td>
-      <td key={brokerSecretKey} className='flex items-left'>
+      <td key={brokerSecretKey}>
         <input
           type='string'
           id='brokerSecretKey'
           placeholder='qAz512b921xTYQ4a87'
           className='min-w-[7rem] text-gray-800/90 text-center font-medium rounded-md border border-gray-200 bg-yellow-50 hover:bg-yellow-100 shadow-md focus:outline-none focus:border-transparent focus:shadow-none duration-200 ease-in-out hover:shadow-none'
           value={brokerSecretKey}
-          onChange={(e) => handleBrokerKeyChange(e)}
+          onChange={(e) => setBrokerKey(e.currentTarget.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              handleBrokerKeyChange(webhook.id);
+            }
+          }}
         />
       </td>
-      <td key={description} className='flex items-left'>
+      <td key={description}>
         <input
           type='string'
           id='description'
           placeholder='Enter webhook description'
           className='min-w-[7rem] text-gray-800/90 text-center font-medium rounded-md border border-gray-200 bg-yellow-50 hover:bg-yellow-100 shadow-md focus:outline-none focus:border-transparent focus:shadow-none duration-200 ease-in-out hover:shadow-none'
           value={description}
-          onChange={(e) => handleDescriptionChange(e)}
+          onChange={(e) => setDescription(e.currentTarget.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              handleDescriptionChange(webhook.id);
+            }
+          }}
         />
       </td>
-      <td key={createdAt.toLocaleString()} className='flex items-left'>
-        <p className='text-sm text-black dark:text-white'>{createdAt.toLocaleString()}</p>
+      <td key={webhook.createdAt.toLocaleString()}>
+        <p className='min-w-[7rem] text-gray-800/90 text-center font-medium rounded-md border border-gray-200 bg-yellow-50 hover:bg-yellow-100 shadow-md focus:outline-none focus:border-transparent focus:shadow-none duration-200 ease-in-out hover:shadow-none'
+        >{webhook.createdAt.toLocaleString()}</p>
       </td>
-      <td className='flex items-center justify-end w-15'>
+      <td>
         <button className='p-1' onClick={handleDeleteClick} title='Remove Webhook'>
           <TiDelete size='20' className='text-red-600 hover:text-red-700' />
         </button>

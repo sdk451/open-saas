@@ -425,17 +425,17 @@ action updateTask {
 
 action createWebhook {
   fn: import { createWebhook } from "@src/server/actions.js",
-  entities: [Webhook]
+  entities: [User, Webhook]
 }
 
 action deleteWebhook {
   fn: import { deleteWebhook } from "@src/server/actions.js",
-  entities: [Webhook]
+  entities: [User, Webhook]
 }
 
 action updateWebhook {
   fn: import { updateWebhook } from "@src/server/actions.js",
-  entities: [Webhook]
+  entities: [User, Webhook]
 }
 
 action stripePayment {

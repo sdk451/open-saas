@@ -295,6 +295,7 @@ export const updateWebhook: UpdateWebhook<Partial<Webhook>, Webhook> = async ({ 
     throw new HttpError(401);
   }
 
+
   const webhook = await context.entities.Webhook.update({
     where: {
       id,
@@ -346,6 +347,8 @@ export const updateUserById: UpdateUserById<{ id: number; data: Partial<User> },
 
   return updatedUser;
 };
+
+
 
 export const updateBrokerById: UpdateBrokerById<{ id: string; data: Partial<Broker> }, Broker> = async (
   { id, data },
