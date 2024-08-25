@@ -1,31 +1,11 @@
 import { FormEvent, useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
-import DefaultLayout from '../admin/layout/DefaultLayout';
 import Breadcrumb from '../admin/components/Breadcrumb';
 import { createWebhook } from 'wasp/client/operations';
-import { HttpError } from 'wasp/server';
 import { useAuth } from "wasp/client/auth";
 
 import { type Webhook } from 'wasp/entities';
 
-
-// export const calculateDailyStats: DailyStatsJob<never, void> = async (_args, context) => {
-//   const nowUTC = new Date(Date.now());
-//   nowUTC.setUTCHours(0, 0, 0, 0);
-
-//   const yesterdayUTC = new Date(nowUTC);
-//   yesterdayUTC.setUTCDate(yesterdayUTC.getUTCDate() - 1);
-
-//   try {
-//     const yesterdaysStats = await context.entities.DailyStats.findFirst({
-//       where: {
-//         date: {
-//           equals: yesterdayUTC,
-//         },
-//       },
-//     });
-
-//     const userCount = await context.entities.User.count({});
 
 function NewWebhookForm({ handleCreateWebhook }: { handleCreateWebhook: typeof createWebhook }) {
 
@@ -64,7 +44,7 @@ function NewWebhookForm({ handleCreateWebhook }: { handleCreateWebhook: typeof c
       //     level: 'orm-error',
       //   });
       }
-    history.push('/app');
+    // history.push('/app');
   };
 
   return (
@@ -140,10 +120,10 @@ function NewWebhookForm({ handleCreateWebhook }: { handleCreateWebhook: typeof c
 const CreateWebhookPage = () => {
   
   return (
-    <DefaultLayout>
-        <Breadcrumb pageName="New Webhook"/>
-        <NewWebhookForm handleCreateWebhook={createWebhook} />
-    </DefaultLayout>
+    <div className='py-10 lg:mt-10'>
+      <Breadcrumb pageName="New Webhook"/>
+      <NewWebhookForm handleCreateWebhook={createWebhook} />
+    </div>
   )
 }
 

@@ -326,7 +326,7 @@ export const deleteWebhook: DeleteWebhook<Pick<Webhook, 'id'>, Webhook> = async 
 };
 
 
-export const updateUserById: UpdateUserById<{ id: number; data: Partial<User> }, User> = async (
+export const updateUserById: UpdateUserById<{ id: string; data: Partial<User> }, User> = async (
   { id, data },
   context
 ) => {
