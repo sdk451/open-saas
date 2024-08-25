@@ -49,7 +49,6 @@ export default function AppPage() {
 
 function WebhooksTable() {
 
-    const { data: user } = useAuth();
     const { data: webhooks, isLoading: isWebhooksLoading } = useQuery(getAllWebhooksByUser);
   
   return (
@@ -93,10 +92,10 @@ function WebhooksTable() {
 
 function TableRow(webhook : Webhook) {
 
-  const [broker, setBroker] = useState<string>('');
-  const [brokerApiUrl, setBrokerUrl] = useState<string>('');
-  const [brokerSecretKey, setBrokerKey] = useState<string>('');
-  const [description, setDescription] = useState<string>('');
+  const [broker, setBroker] = useState<string>(webhook.broker);
+  const [brokerApiUrl, setBrokerUrl] = useState<string>(webhook.brokerApiUrl);
+  const [brokerSecretKey, setBrokerKey] = useState<string>(webhook.brokerSecretKey);
+  const [description, setDescription] = useState<string>(webhook.description);
 
   const handleDescriptionChange = async (id: string) => {
     await updateWebhook({

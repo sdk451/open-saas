@@ -270,13 +270,17 @@ export const deleteTask: DeleteTask<Pick<Task, 'id'>, Task> = async ({ id }, con
   return task;
 };
 
+type CreateWebhookArgs = Pick<Webhook, 'broker' | 'brokerApiUrl' | 'brokerSecretKey' | 'description'>;
 
-export const createWebhook: CreateWebhook<Pick<Webhook, 'broker' | 'brokerApiUrl' | 'brokerSecretKey' | 'description'>, Webhook> = async ({ broker, brokerApiUrl, brokerSecretKey, description }, context) => {
+export const createWebhook: CreateWebhook<CreateWebhookArgs, Webhook> = async (
+  { broker, brokerApiUrl, brokerSecretKey, description }, context
+) => {
   if (!context.user) {
     throw new HttpError(401);
   }
 
-  const webhook = await context.entities.Webhook.create({
+  // const webhook = await context.entities.Webhook.create({
+  return context.entities.Webhook.create({
     data: {
       broker,
       brokerApiUrl,
@@ -286,7 +290,7 @@ export const createWebhook: CreateWebhook<Pick<Webhook, 'broker' | 'brokerApiUrl
     },
   });
 
-  return webhook;
+  // return webhook;
 };
 
 

@@ -401,6 +401,17 @@ crud Brokers {
   },
 }
 
+crud Webhooks {
+  entity: Webhook,
+  operations: {
+    getAll: {},
+    get: {},
+    create: {},
+    update: {},
+    delete: {},
+  },
+}
+
 // 📝 Actions
 
 action generateGptResponse {
@@ -425,17 +436,17 @@ action updateTask {
 
 action createWebhook {
   fn: import { createWebhook } from "@src/server/actions.js",
-  entities: [User, Webhook]
+  entities: [Webhook]
 }
 
 action deleteWebhook {
   fn: import { deleteWebhook } from "@src/server/actions.js",
-  entities: [User, Webhook]
+  entities: [Webhook]
 }
 
 action updateWebhook {
   fn: import { updateWebhook } from "@src/server/actions.js",
-  entities: [User, Webhook]
+  entities: [Webhook]
 }
 
 action stripePayment {

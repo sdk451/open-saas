@@ -20,8 +20,18 @@ function NewWebhookForm({ handleCreateWebhook }: { handleCreateWebhook: typeof c
   const [description, setDescription] = useState<string>('');
 
   let payload : CreateWebhookPayload
+
+
+  const handleSubmit = async () => {
+    payload = {broker: broker, brokerApiUrl: brokerApiUrl, brokerSecretKey: brokerSecretKey, description: description}
+    try {
+      await handleCreateWebhook( payload );
+    } catch (err: any) {
+      window.alert('Error: ' + (err.message || 'Something went wrong creating webhook'));
+    }
+  };
   
-  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+  const handleValidation = async (event: FormEvent<HTMLFormElement>) => {
     if (!user) {
       history.push('/login');
       return;
@@ -31,24 +41,18 @@ function NewWebhookForm({ handleCreateWebhook }: { handleCreateWebhook: typeof c
     payload = {broker: broker, brokerApiUrl: brokerApiUrl, brokerSecretKey: brokerSecretKey, description: description}
 
     try {
-      await handleCreateWebhook(payload);
+      handleSubmit();
       setBroker('');
       setBrokerUrl('');
       setBrokerKey('');
       setDescription('');
-    } catch (error: any) {
-      console.error('Error creating webhook: ', error);
-      // await context.entities.Logs.create({
-      //   data: {
-      //     message: `Error creating webhook: ${error?.message}`,
-      //     level: 'orm-error',
-      //   });
-      }
+    } catch (error: any) {}
+      
     // history.push('/app');
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleValidation}>
       <div className='grid grid-cols-8 border-t-4 border-stroke py-4.5 px-4 bg-white shadow-default dark:border-strokedark dark:bg-boxdark md:px-6 '>
         <div className="col-start-1 border-b border-stroke py-4 px-4 dark:border-strokedark">
           <label className="font-medium text-black dark:text-white">
