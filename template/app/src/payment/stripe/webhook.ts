@@ -101,7 +101,7 @@ async function saveSuccessfulOneTimePayment(
   const userStripeId = session.customer;
   const lineItems = await getCheckoutLineItemsBySessionId(session.id);
   const lineItemPriceId = extractPriceId(lineItems);
-  if (lineItemPriceId === 'price_1RzDXmHHaIYE8eBjBTWzIRiJ') {
+  if (lineItemPriceId === 'price_1RxH2kHHaIYE8eBjW6lFiKaP') {
     return prismaUserDelegate.update({
       where: {
         paymentProcessorUserId: userStripeId,

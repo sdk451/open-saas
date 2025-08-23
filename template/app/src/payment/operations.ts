@@ -35,7 +35,7 @@ export const generateCheckoutSession: GenerateCheckoutSession<
 
   let priceId;
   if (type === 'consultation') {
-    priceId = 'price_1RzDXmHHaIYE8eBjBTWzIRiJ';
+    priceId = 'price_1RxH2kHHaIYE8eBjW6lFiKaP';
   } else {
     priceId = paymentPlans[planId].priceId;
   }
