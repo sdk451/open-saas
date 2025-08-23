@@ -10,19 +10,22 @@ export type CheckoutSession = {
   sessionId: string;
 };
 
-const generateCheckoutSessionSchema = z.nativeEnum(PaymentPlanId);
+const generateCheckoutSessionSchema = z.object({
+  planId: z.nativeEnum(PaymentPlanId),
+  type: z.string().optional(),
+});
 
 type GenerateCheckoutSessionInput = z.infer<typeof generateCheckoutSessionSchema>;
 
 export const generateCheckoutSession: GenerateCheckoutSession<
   GenerateCheckoutSessionInput,
   CheckoutSession
-> = async (rawPaymentPlanId, context) => {
+> = async (args, context) => {
   if (!context.user) {
     throw new HttpError(401, 'Only authenticated users are allowed to perform this operation');
   }
 
-  const paymentPlanId = ensureArgsSchemaOrThrowHttpError(generateCheckoutSessionSchema, rawPaymentPlanId);
+  const { planId, type } = ensureArgsSchemaOrThrowHttpError(generateCheckoutSessionSchema, args);
   const userId = context.user.id;
   const userEmail = context.user.email;
   if (!userEmail) {
@@ -30,11 +33,18 @@ export const generateCheckoutSession: GenerateCheckoutSession<
     throw new HttpError(403, 'User needs an email to make a payment.');
   }
 
-  const paymentPlan = paymentPlans[paymentPlanId];
+  let priceId;
+  if (type === 'consultation') {
+    priceId = 'price_1RzDXmHHaIYE8eBjBTWzIRiJ';
+  } else {
+    priceId = paymentPlans[planId].priceId;
+  }
+
+  const paymentPlan = paymentPlans[planId];
   const { session } = await paymentProcessor.createCheckoutSession({
     userId,
     userEmail,
-    paymentPlan,
+    paymentPlan: { ...paymentPlan, priceId },
     prismaUserDelegate: context.entities.User,
   });
 

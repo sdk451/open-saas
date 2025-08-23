@@ -101,13 +101,24 @@ async function saveSuccessfulOneTimePayment(
   const userStripeId = session.customer;
   const lineItems = await getCheckoutLineItemsBySessionId(session.id);
   const lineItemPriceId = extractPriceId(lineItems);
-  const planId = getPlanIdByPriceId(lineItemPriceId);
-  const plan = paymentPlans[planId];
-  const { numOfCreditsPurchased } = getPlanEffectPaymentDetails({ planId, planEffect: plan.effect });
-  return updateUserStripePaymentDetails(
-    { userStripeId, numOfCreditsPurchased, datePaid: new Date() },
-    prismaUserDelegate
-  );
+  if (lineItemPriceId === 'price_1RzDXmHHaIYE8eBjBTWzIRiJ') {
+    return prismaUserDelegate.update({
+      where: {
+        paymentProcessorUserId: userStripeId,
+      },
+      data: {
+        hasPaidForConsultation: true,
+      },
+    });
+  } else {
+    const planId = getPlanIdByPriceId(lineItemPriceId);
+    const plan = paymentPlans[planId];
+    const { numOfCreditsPurchased } = getPlanEffectPaymentDetails({ planId, planEffect: plan.effect });
+    return updateUserStripePaymentDetails(
+      { userStripeId, numOfCreditsPurchased, datePaid: new Date() },
+      prismaUserDelegate
+    );
+  }
 }
 
 // This is called when a subscription is successfully purchased or renewed and payment succeeds.

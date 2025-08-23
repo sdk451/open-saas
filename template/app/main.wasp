@@ -28,6 +28,7 @@ app OpenSaaS {
     // via the Cookie Consent component after the user clicks the "Accept" cookies button.
     "<script defer data-domain='<your-site-id>' src='https://plausible.io/js/script.js'></script>",  // for production
     "<script defer data-domain='<your-site-id>' src='https://plausible.io/js/script.local.js'></script>",  // for development
+    "<script src='https://unpkg.com/react-calendly@latest/dist/umd/react-calendly.js'></script>",
   ],
 
   // 🔐 Auth out of the box! https://wasp.sh/docs/auth/overview
@@ -142,6 +143,16 @@ query getPaginatedUsers {
 
 action updateIsUserAdminById {
   fn: import { updateIsUserAdminById } from "@src/user/operations",
+  entities: [User]
+}
+
+action updateCalendlyLink {
+  fn: import { updateCalendlyLink } from "@src/user/operations",
+  entities: [User]
+}
+
+query getAdminCalendlyLink {
+  fn: import { getAdminCalendlyLink } from "@src/user/operations",
   entities: [User]
 }
 //#endregion

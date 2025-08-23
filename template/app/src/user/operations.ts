@@ -124,3 +124,32 @@ export const getPaginatedUsers: GetPaginatedUsers<GetPaginatedUsersInput, GetPag
     totalPages,
   };
 };
+
+export const updateCalendlyLink = async (args, context) => {
+  if (!context.user) {
+    throw new HttpError(401)
+  }
+
+  if (!context.user.isAdmin) {
+    throw new HttpError(403)
+  }
+
+  return context.entities.User.update({
+    where: {
+      id: context.user.id,
+    },
+    data: {
+      calendlyLink: args.calendlyLink,
+    },
+  })
+}
+
+export const getAdminCalendlyLink = async (args, context) => {
+  const admin = await context.entities.User.findFirst({
+    where: {
+      isAdmin: true,
+    },
+  })
+
+  return admin?.calendlyLink
+}

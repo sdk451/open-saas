@@ -14,6 +14,8 @@ model User {
   email                     String?         @unique
   username                  String?         @unique
   isAdmin                   Boolean         @default(false)
+  calendlyLink              String?
+  hasPaidForConsultation    Boolean         @default(false)
 
   paymentProcessorUserId    String?         @unique
   lemonSqueezyCustomerPortalUrl String?     // You can delete this if you're not using Lemon Squeezy as your payments processor.

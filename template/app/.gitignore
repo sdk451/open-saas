@@ -1,11 +1,10 @@
+# Wasp builds everything into the .wasp/ directory.
 .wasp/
+# Some files are created by the `wasp start` command.
+# You may want to track these if you want to recognize changes made by `wasp start`,
+# but you should not modify them manually.
+.env.server
+tsconfig.json
+vite.config.ts
+# We don't want to track node_modules.
 node_modules/
-
-# Ignore all dotenv files by default to prevent accidentally committing any secrets.
-# To include specific dotenv files, use the `!` operator or adjust these rules.
-.env
-.env.*
-
-# Don't ignore example dotenv files.
-!.env.example
-!.env.*.example

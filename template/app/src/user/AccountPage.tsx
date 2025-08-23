@@ -1,12 +1,15 @@
-import { getCustomerPortalUrl, useQuery } from 'wasp/client/operations';
+import { getCustomerPortalUrl, useQuery, getAdminCalendlyLink, generateCheckoutSession } from 'wasp/client/operations';
 import { Link as WaspRouterLink, routes } from 'wasp/client/router';
 import type { User } from 'wasp/entities';
 import { Button } from '../components/ui/button';
+import { InlineWidget } from 'react-calendly';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Separator } from '../components/ui/separator';
 import { SubscriptionStatus, parsePaymentPlanId, prettyPaymentPlanName } from '../payment/plans';
 
 export default function AccountPage({ user }: { user: User }) {
+  const { data: calendlyLink, isLoading: isCalendlyLinkLoading } = useQuery(getAdminCalendlyLink);
+
   return (
     <div className='mt-10 px-6'>
       <Card className='mb-4 lg:m-8'>
@@ -58,6 +61,41 @@ export default function AccountPage({ user }: { user: User }) {
           </div>
         </CardContent>
       </Card>
+      {isCalendlyLinkLoading ? (
+        <p>Loading...</p>
+      ) : calendlyLink && !user.hasPaidForConsultation ? (
+        <Card className='mb-4 lg:m-8'>
+          <CardHeader>
+            <CardTitle className='text-base font-semibold leading-6 text-foreground'>
+              Book a Consultation
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Button
+              onClick={() =>
+                generateCheckoutSession({ planId: 'hobby', type: 'consultation' }).then(({ sessionUrl }) => {
+                  if (sessionUrl) {
+                    window.location.href = sessionUrl;
+                  }
+                })
+              }
+            >
+              Book Now
+            </Button>
+          </CardContent>
+        </Card>
+      ) : user.hasPaidForConsultation && calendlyLink ? (
+        <Card className='mb-4 lg:m-8'>
+          <CardHeader>
+            <CardTitle className='text-base font-semibold leading-6 text-foreground'>
+              Book a Consultation
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <InlineWidget url={calendlyLink} />
+          </CardContent>
+        </Card>
+      ) : null}
     </div>
   );
 }
